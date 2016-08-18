@@ -1,46 +1,5 @@
-import pyganim
-
+import pyganim, time
 from generics import *
-
-
-# Constants
-FPS          = 100
-
-WINDOWWIDTH  = 1600
-WINDOWHEIGHT = 900
-
-ENEMYSPEED   = 4
-ENEMYWIDTH   = 50
-ENEMYHEIGHT  = 50
-
-PLAYERSPEED  = 10
-PLAYERHEALTH = 100
-PLAYERARMOR  = 100
-PLAYERWIDTH  = 100
-PLAYERHEIGHT = 100
-
-MENUWIDTH  = 400
-MENUHEIGHT = 300
-
-LASERWIDTH   = 30
-LASERHEIGHT  = 5
-LASERSPEED   = 16
-
-# Color palette
-GRAY     = (100, 100, 100)
-NAVYBLUE = ( 60,  60, 100)
-WHITE    = (255, 255, 255)
-RED      = (255,   0,   0)
-GREEN    = (  0, 255,   0)
-BLUE     = (  0,   0, 255)
-YELLOW   = (255, 255,   0)
-ORANGE   = (255, 128,   0)
-PURPLE   = (255,   0, 255)
-CYAN     = (  0, 255, 255)
-BLACK    = (  0,   0,   0)
-
-BGCOLOR  = ( 28,  28,  28)
-
 
 pygame.init()
 screen = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT))
@@ -49,54 +8,79 @@ pygame.display.set_caption('Project Super Awesome Fun Time')
 pygame.mouse.set_visible(False)
 
 # Fonts
-FPSFONT  = pygame.font.SysFont('monospace', 15)
-HUDFONT  = pygame.font.SysFont('monospace', 17)
-NAMEFONT = pygame.font.SysFont('monospace', 20, bold = True)
+TITLEFONT = pygame.font.SysFont('arial', 17, bold=True)
+BIGFONT   = pygame.font.SysFont('arial', 30, bold=True)
+TABFONT   = pygame.font.SysFont('arial', 25)
+MENUFONT  = pygame.font.SysFont('arial', 20)
+FPSFONT   = pygame.font.SysFont('monospace', 15)
+HUDFONT   = pygame.font.SysFont('monospace', 17)
+NAMEFONT  = pygame.font.SysFont('monospace', 20, bold=True)
 
 # Graphics converted to save memory
 
-# HUD
-HEALTHSHEET = pygame.image.load('images/healthbars.png').convert_alpha()
-HEALTHBARS = cutSpriteSheet(200, 10, 5, 30, HEALTHSHEET, 11)
-
-PLAYERMENU = pygame.image.load('images/player menu.png').convert_alpha()
+PLAYERMENU = pygame.image.load('images/player menu.png').convert()
 
 # Loots
 COINSHEET = pygame.image.load('images/spinning gold coin.png').convert_alpha()
 
 # Explosions
 EXPLOSIONRECT = pygame.image.load('explosion rect.png')
-EXPLOSHEET1 = pygame.image.load('images/explo1.png').convert_alpha()
-EXPLOSHEET2 = pygame.image.load('images/explo2.png').convert_alpha()
+
+EXPLOSHEET1 = pygame.image.load('images/explo1.png').convert()
+EXPLOSHEET1_trans = EXPLOSHEET1.get_at((0, 0))
+EXPLOSHEET1.set_colorkey((EXPLOSHEET1_trans))
+
+EXPLOSHEET2 = pygame.image.load('images/explo2.png').convert()
+EXPLOSHEET2.set_colorkey((WHITE))
 
 # Enemy
-EYEBALLIMAGE = pygame.image.load('images/eyeball.png').convert_alpha()
-ENEMYIMAGE   = pygame.image.load('images/enemy.png').convert_alpha()
-BLANKENEMY   = pygame.image.load('images/blank enemy.png').convert_alpha()
+UFOSHEET     = pygame.image.load('images/ufo sheet.png').convert()
+
+EYEBALLIMAGE = pygame.image.load('images/eyeball.png').convert()
+EYEBALLIMAGE.set_colorkey((WHITE))
+
+ENEMYIMAGE   = pygame.image.load('images/enemy.png').convert()
+
+BLANKENEMY   = pygame.image.load('images/blank enemy.png').convert()
+BLANKENEMY.set_colorkey((WHITE))
+
+ASTEROID     = pygame.image.load('images/asteroid.png').convert()
+ASTEROID.set_colorkey((WHITE))
 
 # Cursor
 CROSSHAIR = pygame.image.load('images/crosshair.png').convert_alpha()
 
 # Player
-BLUESHIP   = pygame.image.load('images/blueship.png').convert_alpha()
+PLAYERRECT = pygame.image.load('images/player rect.png').convert()
+PLAYERRECT.set_colorkey((WHITE))
+
+BLUESHIP   = pygame.image.load('images/blueship.png').convert()
+BLUESHIP.set_colorkey((WHITE))
 
 # Weapon
 LASERIMAGE = pygame.image.load('images/laser horiz.png').convert_alpha()
 
 # Border
-RIGHTWALL  = pygame.image.load('images/right wall.png').convert_alpha()
-LEFTWALL   = pygame.image.load('images/left wall.png').convert_alpha()
-TOPWALL    = pygame.image.load('images/top wall.png').convert_alpha()
-BOTTOMWALL = pygame.image.load('images/bottom wall.png').convert_alpha()
+RIGHTWALL  = pygame.image.load('images/right wall.png').convert()
+LEFTWALL   = pygame.image.load('images/left wall.png').convert()
+TOPWALL    = pygame.image.load('images/top wall.png').convert()
+BOTTOMWALL = pygame.image.load('images/bottom wall.png').convert()
 
 # Background
-SPACEIMAGE = pygame.image.load('images/space.png').convert_alpha()
+SPACEIMAGE = pygame.image.load('images/space.png').convert()
 
 # Planets
 PLANET1 = pygame.image.load('images/planet1.png').convert_alpha()
 PLANET2 = pygame.image.load('images/planet2.png').convert_alpha()
 PLANET3 = pygame.image.load('images/planet3.png').convert_alpha()
 PLANET4 = pygame.image.load('images/planet4.png').convert_alpha()
+
+# UFO animation
+ufo_sprites = cutSpriteSheet(84, 84, 6, 84, UFOSHEET, 6)
+
+UFOANIM = pyganim.PygAnimation(
+    [(ufo_sprites[0], 0.1), (ufo_sprites[1], 0.1), (ufo_sprites[2], 0.1),
+     (ufo_sprites[3], 0.1), (ufo_sprites[4], 0.1), (ufo_sprites[5], 0.1)])
 
 # Explosion animations
 explo_sprites_1 = cutSpriteSheet(50, 128, 18, 128, EXPLOSHEET1, 18)
@@ -131,4 +115,5 @@ EXPLOANIM2 = pyganim.PygAnimation(
 LASERSOUND     = pygame.mixer.Sound('sounds/laser.wav')
 EXPLOSIONSOUND = pygame.mixer.Sound('sounds/explosion.wav')
 COLLECTCOIN    = pygame.mixer.Sound('sounds/collect coin.wav')
+LANDINGSOUND   = pygame.mixer.Sound('sounds/landing1.wav')
 

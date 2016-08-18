@@ -1,5 +1,9 @@
-from prepare import *
 from vectorMath import *
+from enemyControl import *
+from environment import *
+
+enemy_weap_group  = pygame.sprite.RenderUpdates()
+plyr_weap_group = pygame.sprite.RenderUpdates()
 
 # Make weapon sprites
 class Weapon(pygame.sprite.Sprite):
@@ -22,3 +26,11 @@ class Weapon(pygame.sprite.Sprite):
             if self.speed != 0:
                 move_vector = [c * self.speed for c in normalize(target_vector)]
                 self.rect.x, self.rect.y = add((self.rect.x, self.rect.y), move_vector)
+
+        else:
+            enemy_weap_group.remove(self)
+            arena_sprites.remove(self)
+            enemy_attackers.remove(self)
+            plyr_weap_group.remove(self)
+
+
